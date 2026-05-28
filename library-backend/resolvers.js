@@ -94,7 +94,7 @@ const resolvers = {
       }
 
       if(args.author !== undefined){
-        result = result.filter(b => b.author && b.author == args.author)
+        result = result.filter(b => b.author.name == args.author)
       }
 
       if(args.genre !== undefined){
@@ -117,19 +117,41 @@ const resolvers = {
       } else{
         author.bookCount += 1
       }
-    await author.save()
+    try {
+        await author.save()
+      } catch (error) {
+        throw new GraphQLError(`Saving author failed: ${error.message}`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name,
+            error
+          }
+        })
+      }
+
     const book = new Book({...args, id: uuid(), author: author})
-    await book.save()
+    try {
+        await book.save()
+      } catch (error) {
+        throw new GraphQLError(`Saving book failed: ${error.message}`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
+      }
     return book.populate('author')
     },
     editAuthor: async (root, args) => {
-      const author = await Author.findOne({name: args.author})
+      const author = await Author.findOne({name: args.name})
       if(!author){
         return null
       }
 
       author.born = args.setBornTo
-      return author.save()
+      await author.save()
+      return author
     }
   },
   Author: {
