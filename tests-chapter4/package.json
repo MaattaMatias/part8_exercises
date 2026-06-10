@@ -5,7 +5,10 @@
   "scripts": {
     "test": "node --test"
   },
+  "type": "module",
   "dependencies": {
-    "mongodb-memory-server": "^10.4.0"
+    "@apollo/server": "^5.5.1",
+    "mongodb-memory-server": "^10.4.3",
+    "mongoose": "^9.7.0"
   }
 }

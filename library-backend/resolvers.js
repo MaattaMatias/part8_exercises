@@ -2,6 +2,8 @@ import { GraphQLError } from 'graphql'
 import { v1 as uuid } from 'uuid'
 import Author from './models/author.js'
 import Book from './models/book.js'
+import jwt from 'jsonwebtoken'
+import User from './models/user.js'
 
 let authors = [
   {
@@ -105,11 +107,21 @@ const resolvers = {
       },
     allAuthors: async () => {
       return Author.find({})
+    },
+    me: (root, args, context) => {
+      return context.currentUser
     }
 
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      if(!context.currentUser){
+        throw new GraphQLError('not authenticated', {
+          extensions: {
+            code: 'UNAUTHENTICATED'
+          }
+        })
+      }
       let author = await Author.findOne({name: args.author})
 
       if(!author){
@@ -143,7 +155,14 @@ const resolvers = {
       }
     return book.populate('author')
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      if(!context.currentUser){
+        throw new GraphQLError('not authenticated', {
+          extensions: {
+            code: 'UNAUTHENTICATED'
+          }
+        })
+      }
       const author = await Author.findOne({name: args.name})
       if(!author){
         return null
@@ -152,7 +171,48 @@ const resolvers = {
       author.born = args.setBornTo
       await author.save()
       return author
+    },
+    _resetDatabase: async () => {
+      if (process.env.NODE_ENV !== 'test') {
+        throw new GraphQLError('_resetDatabase is only available in test mode')
+      }
+      await Author.deleteMany({})
+      await Book.deleteMany({})
+      await User.deleteMany({})
+      return true
+    },
+    createUser: async (root, args) => {
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
+
+      return user.save()
+        .catch(error => {
+          throw new GraphQLError(`Creating the user failed: ${error.message}`, {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.username,
+              error
+            }
+          })
+        })
+    },
+  login: async (root, args) => {
+    const user = await User.findOne({ username: args.username })
+
+    if ( !user || args.password !== 'secret' ) {
+      throw new GraphQLError('wrong credentials', {
+        extensions: {
+          code: 'BAD_USER_INPUT'
+        }
+      })        
     }
+
+    const userForToken = {
+      username: user.username,
+      id: user._id,
+    }
+
+    return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+  },
   },
   Author: {
     bookCount: async (root) => {

@@ -1,14 +1,15 @@
-const {
+import {
   ApolloServer,
-} = require('../library-backend/node_modules/@apollo/server')
-const { MongoMemoryServer } = require('mongodb-memory-server')
-const mongoose = require('../library-backend/node_modules/mongoose')
+} from '@apollo/server'
+import { MongoMemoryServer } from 'mongodb-memory-server'
 
-const typeDefs = require('../library-backend/schema')
-const resolvers = require('../library-backend/resolvers')
-const Author = require('../library-backend/models/author')
-const Book = require('../library-backend/models/book')
-const User = require('../library-backend/models/user')
+import typeDefs from '../library-backend/schema.js'
+import resolvers from '../library-backend/resolvers.js'
+import Author from '../library-backend/models/author.js'
+import Book from '../library-backend/models/book.js'
+import User from'../library-backend/models/user.js'
+
+const mongoose = User.base
 
 process.env.JWT_SECRET = 'test-secret-key'
 
@@ -109,7 +110,7 @@ const createServer = () => {
   return new ApolloServer({ typeDefs, resolvers })
 }
 
-module.exports = {
+export {
   initialAuthors,
   initialBooks,
   setupDatabase,

@@ -1,6 +1,6 @@
-const { describe, test, before, after, beforeEach } = require('node:test')
-const assert = require('node:assert')
-const {
+import { describe, test, before, after, beforeEach } from 'node:test'
+import assert from 'node:assert'
+import {
   setupDatabase,
   teardownDatabase,
   seedDatabase,
@@ -10,7 +10,7 @@ const {
   Author,
   Book,
   User,
-} = require('./test_helper')
+} from './test_helper.js'
 
 let server
 
