@@ -3,6 +3,7 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import SetBirthyear from './components/SetBirthyear'
+import Recommendations from './components/Recommendations'
 import { gql } from '@apollo/client'
 import Login from './components/Login'
 import { useApolloClient, useQuery } from '@apollo/client/react'
@@ -63,6 +64,7 @@ const App = () => {
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
         <button onClick={() => setPage('birthyear')}>set birthyear</button>
+        <button onClick={() => setPage('recommendations')}>recommendations</button>
         <button onClick={onLogout}>logout</button>
       </div>
 
@@ -73,6 +75,8 @@ const App = () => {
       <NewBook show={page === 'add'} />
 
       <SetBirthyear show={page === 'birthyear'}/>
+
+      <Recommendations show={page === 'recommendations'}/>
     </div>
   )
 }
