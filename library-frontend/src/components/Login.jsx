@@ -14,7 +14,7 @@ const LOGIN = gql`
 `
 
 
-const Login = ({show, setToken, setError, setPage}) => {
+const Login = ({show, setToken, setPage}) => {
 
     if (!show) {
     return null
@@ -22,6 +22,7 @@ const Login = ({show, setToken, setError, setPage}) => {
   
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const [ login ] = useMutation(LOGIN, {
     onCompleted: (data) => {
@@ -31,8 +32,8 @@ const Login = ({show, setToken, setError, setPage}) => {
       setPage('authors')
       console.log('login completed...')
     },
-    onError: (error) => {
-      setError(error.message)
+    onError: () => {
+      setError('login failed')
     }
   })
 
@@ -45,7 +46,13 @@ const Login = ({show, setToken, setError, setPage}) => {
     setUsername('')
     setPassword('')
   }
-
+  if(error != ''){
+    return(
+      <div>
+        {error}
+      </div>
+    )
+  }
   return (
     <div>
       <div>

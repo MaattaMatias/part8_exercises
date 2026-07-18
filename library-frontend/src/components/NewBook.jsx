@@ -11,7 +11,12 @@ const NEW_BOOK = gql`
   ) {
     addBook(title: $title, author: $author, published: $published, genres: $genres) {
       title
-      author
+      author {
+          name
+          bookCount
+          born
+          id
+        }
       published
       genres
     }

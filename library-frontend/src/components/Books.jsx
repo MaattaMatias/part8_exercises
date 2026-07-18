@@ -22,27 +22,43 @@ const Books = (props) => {
       }
   }
 `
-  const [genre, setGenre] = useState('allGenres')
-
+  const [genre, setGenre] = useState('all')
+  let booksToShow
+  let parameter
+  if(genre == 'all'){
+    parameter = ''
+  } else {
+    parameter = genre
+  }
   const books = useQuery(ALL_BOOKS, {
+    variables: {
+      genre: parameter
+    },
     pollInterval: 2000})
 
   if(books.loading){
     return <div>loading...</div>
   }
-  const booksToShow = genre === 'allGenres' 
-  ? books.data.allBooks 
-  : books.data.allBooks.filter(b=> b.genres.includes(genre))
-  console.log(booksToShow)
+  booksToShow = books.data.allBooks
+  
+  const genres = booksToShow.reduce((accum, book) => {
+    book.genres.forEach(genre => {
+      if(!accum.includes(genre)){
+        accum.push(genre)
+      }
+    })
+    return accum
+  }, [])
+  
 
   return (
     <div>
       <h2>books</h2>
-      <h3>filter by genre: {genre}</h3>
-      <button onClick={() => setGenre('fantasy')}>fantasy</button>
-      <button onClick={() => setGenre('horror')}>horror</button>
-      <button onClick={() => setGenre('mystery')}>mystery</button>
-      <button onClick={() => setGenre('allGenres')}>all genres</button>
+      <h3>in genre {genre}</h3>
+      {genres.map((g) => (
+        <button onClick={() => setGenre(g) && books.refetch()}>{g}</button>
+      ))}
+      <button onClick={() => setGenre('all')}>all genres</button>
       <table>
         <tbody>
           <tr>

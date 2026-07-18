@@ -50,8 +50,6 @@ const App = () => {
 
       <NewBook show={page === 'add'} />
 
-      <SetBirthyear show={page === 'birthyear'}/>
-
       <Login show={page === 'login'} setToken={setToken} setError={notify} setPage={setPage}/>
     </div>
     )
@@ -63,18 +61,15 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={() => setPage('birthyear')}>set birthyear</button>
         <button onClick={() => setPage('recommendations')}>recommendations</button>
         <button onClick={onLogout}>logout</button>
       </div>
 
-      <Authors show={page === 'authors'}/>
+      <Authors show={page === 'authors'} token={token}/>
 
       <Books show={page === 'books'}/>
 
       <NewBook show={page === 'add'} />
-
-      <SetBirthyear show={page === 'birthyear'}/>
 
       <Recommendations show={page === 'recommendations'}/>
     </div>
